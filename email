@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, print_function, division, absolute_import
+import smtplib
+from datetime import datetime, date, timedelta
+import pytz
+import time
+import datetime
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.utils import formataddr
+from email.mime.application import MIMEApplication
+
+# 你的邮箱所使用的邮件服务器
+mail_host = "smtp.exmail.qq.com"
+# 你的邮箱
+mail_user = "mawei@mail.i-i.ai"
+# 你的邮箱密码
+mail_pass = "3927040Mavi"
+
+# 接收邮箱列表
+recv = ['mawei@mail.i-i.ai','fuyu@mail.i-i.ai','gaochen@mail.i-i.ai','gaoyang@mail.i-i.ai','lichunhai@mail.i-i.ai','ouyangxiaogang@mail.i-i.ai',
+        'pengwei@mail.i-i.ai','sunlinchun@mail.i-i.ai','sunlinjun@mail.i-i.ai','sunyuegang@mail.i-i.ai','xuliang@mail.i-i.ai',
+        'zhangjunjiu@mail.i-i.ai','zhangjunyan@mail.i-i.ai','zhaoming@mail.i-i.ai','zhouchunzhao@mail.i-i.ai',
+        'yedanni@mail.i-i.ai','zhaoxin@mail.i-i.ai','cheweining@mail.i-i.ai','xiacong@mail.i-i.ai']
+#recv = ['mawei@mail.i-i.ai']
+#        '35952686@qq.com']
+m = MIMEMultipart()
+m['From'] = formataddr(["pupai", mail_user])
+m['To'] = ','.join(recv)
+pytz_ = datetime.datetime.fromtimestamp(int(time.time()), pytz.timezone('Asia/Shanghai')).strftime('%Y-%m-%d %H:%M:%S')
+
+#标题
+subject = '%s 包小黑日报表' % (pytz_.split(' ')[0])
+
+print(subject)
+m['Subject'] = Header(subject, 'utf-8')
+print(m['Subject'])
+# 文字描述内容
+today = date.today()
+m.attach(MIMEText(str(today) +'包小黑日报表', 'plain', 'utf-8'))
+
+
+yesterday = date.today() + timedelta(days=-1)
+
+file_name = str(today) + '包小黑用户日报表.xls'
+
+# 添加xls文件
+att1 = MIMEApplication(open('/home/shizai/datadisk2/mw/BI_daily_report/cron_bxh_report/'+file_name, 'rb').read())
+att1["Content-Type"] = 'application/octet-stream'
+# 这里的filename可以任意写，写什么名字，邮件中显示什么名字
+# att1["Content-Disposition"] = 'attachment,filename="每日未购买.xlsx"'
+#att1.add_header('Content-Disposition', 'attachment', filename=('utf8', '', '%s-%s-%s 包小黑日报表.xls'.encode('utf-8') % (str(datetime.date.today().year), datetime.date.today().month, datetime.date.today().day)))
+
+
+att1.add_header('Content-Disposition', 'attachment', filename=('gbk', '',str(today) +  '包小黑用户日报表.xls'))#注意：此处basename要转换为gbk编码，否则中文会有乱码。
+
+m.attach(att1)
+
+smtpObj = smtplib.SMTP()
+smtpObj.connect(mail_host, 25)
+smtpObj.login(mail_user, mail_pass)
+
+smtpObj.sendmail('mawei@mail.i-i.ai', recv, m.as_string())
+
+
