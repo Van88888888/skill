@@ -1,0 +1,146 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals, print_function, division, absolute_import
+import smtplib
+from datetime import datetime, date, timedelta
+import pytz
+import time
+import datetime
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.multipart import MIMEMultipart
+from email.header import Header
+from email.utils import formataddr
+from email.mime.application import MIMEApplication
+import xlrd
+import emoji
+
+input_dir = '/Users/mawei/Downloads/50-100/'
+file_name = 'email.xls'
+data = xlrd.open_workbook(input_dir + file_name)
+print(data.sheet_names())
+table = data.sheet_by_name('Sheet1')
+print(table.name, table.nrows, table.ncols)
+row_4 = table.row_values(3)
+print(row_4)
+col_3 = table.col_values(2)
+print(col_3, type(col_3), len(col_3))
+col_1 = table.col_values(0)
+print(col_1, type(col_1), len(col_1))
+print(col_1[0:500], type(col_1[0:500]), len(col_1[0:500]))
+#time.sleep(1000000)
+
+emoji_blush = emoji.emojize(':blush:', use_aliases=True)
+emoji_v = emoji.emojize(':v:', use_aliases=True)
+print(emoji.emojize(':blush:', use_aliases=True), type(emoji_blush))  # Python is 👍
+# 有些特殊的表情需要指定 use_aliases=True 参数才可以实现
+print(emoji.emojize(':v:', use_aliases=True))  # Sleeping is 💤
+
+mail_host = "smtp.exmail.qq.com"
+mail_user = "mawei@mail.i-i.ai"
+mail_pass = "3927040Mavi"
+
+url = "https://ai-indeed.com/"
+m = MIMEMultipart()
+m['From'] = formataddr(["pupai", mail_user])
+#m['To'] = ','.join(to_recv)
+#m['Bcc'] = ','.join(bcc_recv)
+subject = '【求职】贵公司招人吗？'
+m['Subject'] = Header(subject, 'utf-8')
+
+col_3 = ['mawei@mail.i-i.ai', 'mwsuccess@163.com', '35952686@qq.com', 'sunlinchun@mail.i-i.ai,',
+            'sunlinchun@mail.i-i.ai,', 'yuwenwei@mail.i-i.ai', 'zhuweirong@mail.i-i.ai',
+'gaoyang@mail.i-i.ai,', 'fangjian@mail.i-i.ai', 'zhangjunjiu@mail.i-i.ai',
+'zhangjunyan@mail.i-i.ai,', 'gaochen@mail.i-i.ai', 'xiangxinxin@mail.i-i.ai']
+col_1 = ['mawe', 'mmm', 'aaa', '实在智能科技有限公司', '实在智能科技有限公司', '实在智能科技有限公司',
+         '实在智能科技有限公司', '实在智能科技有限公司', '实在智能科技有限公司',
+         '实在智能科技有限公司', '实在智能科技有限公司', '实在智能科技有限公司', '实在智能科技有限公司']
+
+
+# col_1 = ['实在智能科技有限公司', '实在智能科技有限公司']
+# col_3 = ['mawei@mail.i-i.ai', 'mwsuccess@163.com']
+
+smtpObj = smtplib.SMTP()
+smtpObj.connect(mail_host, 25)
+smtpObj.login(mail_user, mail_pass)
+
+for i in range(2):  # 500 emails
+    company_info = """
+        <p>
+        <font size="4.5" face="KaiTi">
+    {}，您好！
+        </font>
+        </p>
+    """.format(col_1[i])
+
+    html_info = """
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">
+    Hello，我叫章小鱼，是来应聘的新同学，对贵公司发布的岗位很感兴趣，一句话总结本人能力亮点——<b>我能7*️24工作哦！</b>
+        </font>
+        </p>    
+        
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">
+    是的，您没看错！估计可能有点儿不明觉厉吧{} 如果再补充一些信息，比如我可以不吃不喝、无休无止、以数十倍效率、高准确性完成工作，胜任绝大多数通过电脑完成的常规场景等，我想您没准会一拍大腿，眼前一亮，十分期待了解我是谁：）    
+        </font>
+        </p>  
+            
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">
+    哈，我是「实在智能」通过<b>“章鱼RPA”</b>开发的智能软件机器人，您也可以叫我“数字员工”{}。 </font>
+        </p>    
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">    
+    我可以辅助您处理大量重复、规则、流程化的电脑端工作，能够识别各种票据文档图片、可以通过智能交互聊天方式回答问题、理解诉求或者获取信息……甚至在一些需要凭经验做出决策判断的复杂场景也游刃有余哦{}。    </font>
+        </p>    
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">
+    我还可以身兼多职，<b>人力、财务、销售、运维、客服、运营、行政</b>统统都能搞定，让我辅助您在工作上大放异彩吧！
+        </font>
+        </p>
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">    
+        欢迎联系我的小姐姐～
+        </font>
+        </p>    
+        <p style="text-indent:1cm;">
+        <font size="4.5" face="KaiTi">    
+        朱小七：13575786820
+        </font>
+        </p>    
+    <p style="text-indent:0cm;">
+     <img  src= "https://yuyinzhijian.oss-cn-hangzhou.aliyuncs.com/email_pics/%E6%9C%B1%E5%B0%8F%E4%B8%83.jpg" height="185" width="160"> 
+       </p>    
+    
+        <br>
+        <br>
+        
+    <p style="text-indent:8cm;">
+     <img  src= "https://yuyinzhijian.oss-cn-hangzhou.aliyuncs.com/email_pics/%E9%82%AE%E4%BB%B6%E9%85%8D%E5%9B%BE-%E9%95%BF%E5%9B%BE.png" > 
+       </p>    
+        
+        
+        <p>
+        <font size="4.5" face="KaiTi" color="red">  
+        <b>章鱼RPA试用链接：</b>
+        </font>
+        </p>
+        
+        
+        <p>
+         
+        <a href="https://ai-indeed.com/">
+        <font size="4.5" face="KaiTi" color="red"> 点我点我</font></a>
+        
+        </p>
+        """.format(emoji_blush, emoji_v, emoji_v)
+    html_sub = MIMEText(company_info + html_info, 'html', 'utf-8')
+    # 如果不加下边这行代码的话，上边的文本是不会正常显示的，会把超文本的内容当做文本显示
+    #html_sub["Content-Disposition"] = 'attachment; filename="csdn.html"'
+    m.attach(html_sub)
+    smtpObj.sendmail('mawei@mail.i-i.ai', col_3[i], m.as_string())
+
+
+
+
